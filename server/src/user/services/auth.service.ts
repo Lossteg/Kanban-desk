@@ -5,6 +5,7 @@ import { UserService } from './user.service';
 import { SignUpDto } from '../dto/sign-up.dto';
 import { instanceToPlain } from 'class-transformer';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from '../interface/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -26,11 +27,6 @@ export class AuthService {
     }
 
     return user;
-    // return {
-    //     access_token: this.jwtService.sign({
-    //         user: user, sub: 1
-    //     })
-    // };
   }
 
   async register(signUpDto: SignUpDto): Promise<User> {
@@ -38,5 +34,27 @@ export class AuthService {
     instanceToPlain(user) as User;
 
     return user;
+  }
+
+  async verifyPayload(payload: JwtPayload): Promise<User> {
+    let user: User;
+
+    try {
+      user = await this.userService.findOne({ where: { email: payload.sub } });
+    } catch (error) {
+      throw new UnauthorizedException(
+        `There isn't any user with email: ${payload.sub}`,
+      );
+    }
+
+    return user;
+  }
+
+  signToken(user: User): string {
+    const payload = {
+      sub: user.email,
+    };
+
+    return this.jwtService.sign(payload);
   }
 }

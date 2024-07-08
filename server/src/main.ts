@@ -9,6 +9,14 @@ async function bootstrap() {
     .setTitle('Kanban-desk')
     .setDescription('Kanban-desk API')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'jwt', // Имя схемы безопасности
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

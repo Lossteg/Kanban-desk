@@ -16,6 +16,7 @@ export class UserService {
   }
 
   async findOne(where: FindOneOptions<User>): Promise<User> {
+    console.log(where);
     const user = await this.userRepository.findOne(where);
 
     if (!user) {

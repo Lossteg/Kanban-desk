@@ -8,14 +8,30 @@ import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]),
-            JwtModule.register({
-              secret: process.env.JWT_SECRET,
-              signOptions: {expiresIn: '15m'}
-            })],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.APP_SECRET,
+      signOptions: {
+        expiresIn: '1d',
+        algorithm: 'HS384',
+      },
+      verifyOptions: {
+        algorithms: ['HS384'],
+      },
+    }),
+  ],
   controllers: [AuthController],
-  providers: [UserService, AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  providers: [
+    UserService,
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    GoogleStrategy,
+  ],
 })
 export class UserModule {}
