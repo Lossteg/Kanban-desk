@@ -4,10 +4,11 @@ import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
 import { SignUpDto } from '../dto/sign-up.dto';
 import { instanceToPlain } from 'class-transformer';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private jwtService: JwtService) {}
 
   async login({ email, password }: LoginDto): Promise<User> {
     let user: User;
@@ -25,6 +26,11 @@ export class AuthService {
     }
 
     return user;
+    // return {
+    //     access_token: this.jwtService.sign({
+    //         user: user, sub: 1
+    //     })
+    // };
   }
 
   async register(signUpDto: SignUpDto): Promise<User> {
