@@ -9,18 +9,15 @@ import {
   Body,
   Get,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { Request, Response } from 'express';
 import { LoginDto } from '../dto/login.dto';
 import { SignUpDto } from '../dto/sign-up.dto';
-import { User } from '../entities/user.entity';
-// import { UserExistencePipe } from '../pipes/user-existance.pipe';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { TokenInterceptor } from '../interceptors/token.interceptor';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { RefreshTokenDto } from '../dto/refreshToken.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -29,16 +26,27 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(TokenInterceptor)
   login(@Body() loginDto: LoginDto, @Req() req: Request) {
     return req.user;
   }
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(TokenInterceptor)
-  register(@Body() signUpDto: SignUpDto): Promise<User> {
+  register(@Body() signUpDto: SignUpDto) {
     return this.authService.register(signUpDto);
+  }
+
+  @Post('refresh')
+  @ApiBearerAuth('jwt')
+  @HttpCode(HttpStatus.OK)
+  async refreshTokens(
+    @Req() req: Request,
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ) {
+    return this.authService.refreshTokens(
+      req['accessToken'],
+      refreshTokenDto.refreshToken,
+    );
   }
 
   @Get('google')
@@ -57,7 +65,7 @@ export class AuthController {
   @ApiBearerAuth('jwt')
   @UseGuards(JwtAuthGuard)
   async test(@Res() res: Response) {
-    console.log("inside a test-route!");
+    console.log('inside a test-route!');
     res.json('success');
   }
 }
