@@ -16,11 +16,10 @@ export class UserService {
   }
 
   async findOne(where: FindOneOptions<User>): Promise<User> {
-    console.log(where);
     const user = await this.userRepository.findOne(where);
 
     if (!user) {
-      throw new NotFoundException(`There is no user with ${where}`);
+      throw new NotFoundException(`There is no user with given credentials`);
     }
 
     return user;

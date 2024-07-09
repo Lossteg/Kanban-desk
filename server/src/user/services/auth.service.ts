@@ -1,5 +1,10 @@
 import { LoginDto } from './../dto/login.dto';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
 import { SignUpDto } from '../dto/sign-up.dto';
@@ -9,7 +14,10 @@ import { JwtPayload } from '../interface/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService, private jwtService: JwtService) {}
+  constructor(
+    private readonly userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
   async login({ email, password }: LoginDto): Promise<User> {
     let user: User;
@@ -30,10 +38,26 @@ export class AuthService {
   }
 
   async register(signUpDto: SignUpDto): Promise<User> {
-    const user = await this.userService.create(signUpDto);
-    instanceToPlain(user) as User;
+    try {
+      const user = await this.userService.findOne({
+        where: { email: signUpDto.email },
+      });
+      if (user) {
+        throw new ConflictException(
+          `The email «${signUpDto.email}» is already registered.`,
+        );
+      }
+    } catch (error) {
+      if (!(error instanceof NotFoundException)) {
+        throw error;
+      }
+      // Если пользователь не найден, это нормально для регистрации
+    }
 
-    return user;
+    const user = await this.userService.create(signUpDto);
+    const plainUser = instanceToPlain(user) as User;
+
+    return plainUser;
   }
 
   async verifyPayload(payload: JwtPayload): Promise<User> {

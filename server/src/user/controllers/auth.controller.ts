@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Req,
   Body,
-  UsePipes,
   Get,
   Res,
   UseInterceptors,
@@ -17,10 +16,11 @@ import { Request, Response } from 'express';
 import { LoginDto } from '../dto/login.dto';
 import { SignUpDto } from '../dto/sign-up.dto';
 import { User } from '../entities/user.entity';
-import { UserExistencePipe } from '../pipes/user-existance.pipe';
+// import { UserExistencePipe } from '../pipes/user-existance.pipe';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { TokenInterceptor } from '../interceptors/token.interceptor';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +35,6 @@ export class AuthController {
   }
 
   @Post('register')
-  @UsePipes(UserExistencePipe)
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(TokenInterceptor)
   register(@Body() signUpDto: SignUpDto): Promise<User> {
@@ -55,6 +54,7 @@ export class AuthController {
   }
 
   @Get('test-route')
+  @ApiBearerAuth('jwt')
   @UseGuards(JwtAuthGuard)
   async test(@Res() res: Response) {
     console.log("inside a test-route!");
