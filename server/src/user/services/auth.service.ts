@@ -13,7 +13,6 @@ import { instanceToPlain } from 'class-transformer';
 import { JsonWebTokenError, JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../interface/jwt-payload.interface';
 import { TokenService } from './token.service';
-import { TokensDto } from '../dto/tokens.dto';
 
 @Injectable()
 export class AuthService {
@@ -72,7 +71,7 @@ export class AuthService {
   async refreshTokens(
     accessToken: string,
     refreshToken: string,
-  ): Promise<TokensDto> {
+  ): Promise<string> {
     try {
       const accessPayload = this.jwtService.verify(accessToken);
       const refreshPayload = this.jwtService.verify(refreshToken);
@@ -93,11 +92,9 @@ export class AuthService {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      await this.tokenService.revokeToken(refreshToken);
+      accessToken = this.signToken(user);
 
-      const newTokens = (await this.createTokens(user)) as TokensDto;
-
-      return newTokens;
+      return accessToken;
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;
