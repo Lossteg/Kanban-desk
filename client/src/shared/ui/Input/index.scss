@@ -17,6 +17,10 @@
     outline: none;
     transition: border-color 0.3s;
 
+    align-items: center;
+    justify-content: center;
+
+
     &:focus {
         border-color: #3f51b5;
     }

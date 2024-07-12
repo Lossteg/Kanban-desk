@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
-import Input from "../../../../shared/ui/Input/index";
-import { useRegister } from "../../../../entities/user/model/useRegister";
-import { SignUpDto } from "../../../../entities/user/api/types"; 
+import Input from "@/shared/ui/Input";
+import { useRegister } from "@/entities/user/model/useRegister";
+import { SignUpDto } from "@/entities/user/api/types"; 
 import './index.scss';
 
 const RegisterForm: FC = () => {

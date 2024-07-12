@@ -1,12 +1,14 @@
-import { FC, ChangeEvent, InputHTMLAttributes, useState } from "react";
+import { FC, ChangeEvent, useState } from "react";
 import clsx from "clsx";
 import "./index.scss";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+
+interface InputProps {
   label?: string;
   error?: string;
   value?: string;
   placeholder?: string;
+  type?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
