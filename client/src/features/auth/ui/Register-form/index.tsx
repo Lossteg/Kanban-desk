@@ -1,7 +1,8 @@
 import { FC, useState } from "react";
-import Input from "../../../../shared/ui/Input";
+import Input from "../../../../shared/ui/Input/index";
 import { useRegister } from "../../../../entities/user/model/useRegister";
 import { SignUpDto } from "../../../../entities/user/api/types"; 
+import './index.scss';
 
 const RegisterForm: FC = () => {
   const [email, setEmail] = useState("");
@@ -10,11 +11,16 @@ const RegisterForm: FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const registerMutation = useRegister({
-    onSuccess: (data) => {
-      console.log("Registration successful", data);
-      // Сохранить токены
-      // Обновить состояние пользователя в приложении
-      //Перенаправить пользователя на другую страницу
+    onSuccess: (response) => {
+      if (response.error) {
+        console.error("Registration failed:", response.error);
+        setErrors({ form: response.error });
+      } else if (response.data) {
+        console.log("Registration successful", response.data);
+        // Сохранить токены
+        // Обновить состояние пользователя в приложении
+        // Перенаправить пользователя на другую страницу
+      }
     },
     onError: (error) => {
       console.error("Registration failed", error);
@@ -26,7 +32,7 @@ const RegisterForm: FC = () => {
     const newErrors: { [key: string]: string } = {};
     if (!email) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
-    if (!confirmPassword) newErrors.confirmPassword = "Confirm Password is required";
+    if (!confirmPassword) newErrors.confirmPassword = "Password confirmation is required";
     if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -71,12 +77,7 @@ const RegisterForm: FC = () => {
         <button type="submit" disabled={registerMutation.status === 'pending'}>
           {registerMutation.status === 'pending' ? "Registering..." : "Register"}
         </button>
-        {errors.form && <div className="error">{errors.form}</div>}
-        {registerMutation.status === 'error' && (
-          <div className="error">
-            An error occurred: {registerMutation.error?.message}
-          </div>
-        )}
+        {errors.form && <div className="registration-form-error">{errors.form}</div>}
       </form>
     </div>
   );
