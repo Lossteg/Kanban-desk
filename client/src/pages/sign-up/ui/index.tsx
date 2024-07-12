@@ -1,5 +1,5 @@
 import { FC } from "react";
-import RegisterForm from "../../../features/auth/ui/Register-fom";
+import RegisterForm from "../../../features/auth/ui/Register-form";
 import AuthImg from "../../../assets/9.png";
 import "./index.scss";
 
