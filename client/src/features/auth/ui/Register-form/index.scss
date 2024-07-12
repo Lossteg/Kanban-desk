@@ -1,0 +1,27 @@
+.registration-form-container{
+    max-height: 70vh;
+    padding: 4vh;
+
+    h1 {
+        text-align: center;
+    }
+    .input-container {
+        width: 58vh;
+    }
+    button {
+        margin-top: 3.4vh;
+        width: 25vh;
+    }
+}
+
+.registration-form {
+  display: grid;
+  gap: 3vh; 
+  width: 100%;
+  justify-items: center;
+}
+
+.registration-form-error {
+    margin-top: 10px;
+    color: red;
+}
